@@ -3,6 +3,7 @@ const path = require('path');
 const userRouter = require('./routers/user')
 const itemRouter =require('./routers/item')
 require('./db/mongoose')
+require("dotenv").config();
 
 const port = process.env.PORT
 

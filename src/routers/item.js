@@ -6,11 +6,25 @@ const router = new express.Router()
 
 //fetch all items
 router.get('/items', Auth, async(req, res) => {
-  
+    
     if(req.query.user == 1) {
         try {
            const items = await Item.find({ owner: req.user._id})
-            res.status(200).send(items)
+           var page = req.query.page;
+           var limit = req.query.limit;
+           if (page == null || undefined) {
+               page = 1;
+           }
+           if (limit == null || undefined) {
+               limit = 10;
+           }
+           const start = (page - 1) * limit;
+           const return_count = page * limit;
+   
+           const paginated = items.slice(start, return_count);
+           res.status(200).send({total: items.length,
+               recordsPerPage: limit,
+               items: paginated})
         } catch (error) {
             console.log(error)
             res.status(500).send('something went wrong')
@@ -18,7 +32,21 @@ router.get('/items', Auth, async(req, res) => {
     } else {
     try {
         const items = await Item.find({})
-        res.status(200).send(items)
+        var page = req.query.page;
+        var limit = req.query.limit;
+        if (page == null || undefined) {
+            page = 1;
+        }
+        if (limit == null || undefined) {
+            limit = 10;
+        }
+        const start = (page - 1) * limit;
+        const return_count = page * limit;
+
+        const paginated = items.slice(start, return_count);
+        res.status(200).send({total: items.length,
+            recordsPerPage: limit,
+            items: paginated})
     } catch (error) {
         res.status(400).send(error)
     }
